@@ -1,0 +1,33 @@
+services:
+  nlpjupyter:
+    container_name: jupyter-nlp-worker
+    build: ./
+    user: root
+    volumes:
+      - ./:/app
+    tty: true
+    working_dir: /app
+    ports:
+      - "8890:8890"
+    command: >
+      bash -c "
+        if [ ! -f pyproject.toml ]; then
+          poetry init --no-interaction; \
+          # poetry init --no-interaction \
+          # --name 'nlp work' \
+          # --description 'nlp work' \
+          # --author 'chad' \
+          # --python '^3.12' \
+          # --dependency numpy \
+          # --dependency jupyterlab \
+          # --dependency beautifulsoup4; \
+          poetry add numpy jupyterlab beautifulsoup4;
+
+        fi && \
+        poetry config virtualenvs.create false && \
+        poetry install --no-interaction --no-root && \        
+        poetry run jupyter lab --ip=0.0.0.0 --port=8890 --no-browser --allow-root --NotebookApp.token=''
+      "
+
+
+
